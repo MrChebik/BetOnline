@@ -23,7 +23,8 @@ public class Bet {
     }
 
     private static void makeStake() throws InterruptedException {
-        int idMatch = 6913742;
+        int idMatch = 6913744;
+        int betAmount = 15;
 
         driver = new ChromeDriver();
         driver.get("https://www.fonbet.com/live/?locale=ru#" + idMatch);
@@ -46,10 +47,13 @@ public class Bet {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                WebElement element = driver.findElement(By.id("couponNewSumEdit"));
                 try {
-                    driver.findElement(By.id("couponNewSumMinLabel")).click();
+                    element.clear();
+                    element.sendKeys(String.valueOf(betAmount));
                 } catch (InvalidElementStateException ignored) {
                 }
+                driver.findElement(By.className("newCouponFooter")).click();
 
                 List<WebElement> agreeElements = driver.findElements(By.className("stakeContentWarning"));
                 for (WebElement element1 : agreeElements) {
