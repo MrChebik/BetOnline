@@ -24,7 +24,7 @@ public class Bet {
     }
 
     private static void makeStake() throws InterruptedException {
-        int col = new Random().nextInt(1) + 1;
+        int col = new Random().nextInt(2) + 1;
 
         driver = new ChromeDriver();
         driver.get("https://www.fonbet.com/live/?locale=ru");
@@ -37,16 +37,13 @@ public class Bet {
 
         Thread.sleep(1000);
 
-        List<WebElement> elementsSegment = driver.findElements(By.className("trEvent"));
+        List<WebElement> elementForBet = driver.findElements(By.className("trEvent"));
         for (int i = 0; i < col; i++) {
-            List<WebElement> elementsForBet = elementsSegment.get(i).findElements(By.className("eventCellValue"));
             try {
-                elementsForBet.get(new Random().nextInt(elementsForBet.size())).click();
+                elementForBet.get(i).findElement(By.id("event" + elementForBet.get(i).getAttribute("id").substring(5) + "win1")).click();
             } catch (IllegalArgumentException e) {
                 col++;
-                continue;
             }
-            Thread.sleep(1000);
         }
 
         timer.schedule(new TimerTask() {
