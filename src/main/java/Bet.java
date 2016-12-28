@@ -39,8 +39,13 @@ public class Bet {
 
         List<WebElement> elementForBet = driver.findElements(By.className("trEvent"));
         for (int i = 0; i < col; i++) {
+            String id = elementForBet.get(i).getAttribute("id").substring(5);
             try {
-                elementForBet.get(i).findElement(By.id("event" + elementForBet.get(i).getAttribute("id").substring(5) + "win1")).click();
+                if (elementForBet.get(i).findElement(By.id("eventName" + id)).getCssValue("color").equals("rgba(0, 0, 0, 1)")) {
+                    elementForBet.get(i).findElement(By.id("event" + id + "win1")).click();
+                } else {
+                    col++;
+                }
             } catch (IllegalArgumentException e) {
                 col++;
             }
@@ -81,7 +86,7 @@ public class Bet {
                                 }
                             }, 3600000);
                         }
-                    }, 5000);
+                    }, 7500);
                 }
             }
         }, 3000);
