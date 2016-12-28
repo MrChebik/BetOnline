@@ -1,7 +1,6 @@
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,7 +22,7 @@ public class Bet {
     }
 
     private static void makeStake() throws InterruptedException {
-        int idMatch = 6913744;
+        int idMatch = 6913798;
         int betAmount = 15;
 
         driver = new ChromeDriver();
@@ -39,7 +38,7 @@ public class Bet {
 
         try {
             driver.findElement(By.id("event" + idMatch + "win1")).click();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | ElementNotVisibleException   e) {
             System.out.println("Something wrong, check available bet");
             System.exit(0);
         }
@@ -53,38 +52,40 @@ public class Bet {
                     element.sendKeys(String.valueOf(betAmount));
                 } catch (InvalidElementStateException ignored) {
                 }
-                driver.findElement(By.className("newCouponFooter")).click();
 
-                List<WebElement> agreeElements = driver.findElements(By.className("stakeContentWarning"));
-                for (WebElement element1 : agreeElements) {
-                    if (element1.getCssValue("display").equals("block")) {
-                        try {
-                            element1.findElement(By.className("buttonAgree")).click();
-                        } catch (ElementNotVisibleException | NoSuchElementException ignored) {
-                        }
-                    }
+                try {
+                    driver.findElement(By.id("oddsChangedButton" + idMatch)).click();
+                } catch (ElementNotVisibleException | NoSuchElementException ignored) {
+                }
+
+                try {
+                    driver.findElement(By.className("newCouponFooter")).click();
+                } catch (ElementNotVisibleException | NoSuchElementException ignored) {
                 }
 
                 WebElement makeStake = driver.findElement(By.className("buttonMakeStake"));
-                if (makeStake.getCssValue("background-color").equals("rgba(253, 205, 75, 1)")) {
-                    makeStake.click();
-                    timerStake.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            driver.quit();
-                            timer1hour.schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        makeStake();
-                                    } catch (InterruptedException ignored) {
+                try {
+                    if (makeStake.getCssValue("background-color").equals("rgba(253, 205, 75, 1)") && !driver.findElement(By.id("couponNewSumEdit")).getCssValue("color").equals("rgba(255, 51, 51, 1)") && !driver.findElement(By.id("oddsChangedDiv" + idMatch)).getCssValue("display").equals("block")) {
+                        makeStake.click();
+                        timerStake.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                driver.quit();
+                                timer1hour.schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            makeStake();
+                                        } catch (InterruptedException ignored) {
+                                        }
                                     }
-                                }
-                            }, 3600000);
-                        }
-                    }, 7500);
+                                }, 1000);
+                            }
+                        }, 7500);
+                    }
+                } catch (NoSuchElementException ignored) {
                 }
             }
-        }, 3000);
+        }, 5000);
     }
 }
