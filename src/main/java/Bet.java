@@ -2,7 +2,6 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.List;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,10 +23,10 @@ public class Bet {
     }
 
     private static void makeStake() throws InterruptedException {
-        int col = new Random().nextInt(2) + 1;
+        int idMatch = 6913742;
 
         driver = new ChromeDriver();
-        driver.get("https://www.fonbet.com/live/?locale=ru");
+        driver.get("https://www.fonbet.com/live/?locale=ru#" + idMatch);
 
         Thread.sleep(3000);
 
@@ -37,18 +36,11 @@ public class Bet {
 
         Thread.sleep(1000);
 
-        List<WebElement> elementForBet = driver.findElements(By.className("trEvent"));
-        for (int i = 0; i < col; i++) {
-            String id = elementForBet.get(i).getAttribute("id").substring(5);
-            try {
-                if (elementForBet.get(i).findElement(By.id("eventName" + id)).getCssValue("color").equals("rgba(0, 0, 0, 1)")) {
-                    elementForBet.get(i).findElement(By.id("event" + id + "win1")).click();
-                } else {
-                    col++;
-                }
-            } catch (IllegalArgumentException e) {
-                col++;
-            }
+        try {
+            driver.findElement(By.id("event" + idMatch + "win1")).click();
+        } catch (IllegalArgumentException e) {
+            System.out.println("Something wrong, check available bet");
+            System.exit(0);
         }
 
         timer.schedule(new TimerTask() {
